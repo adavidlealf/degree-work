@@ -1,7 +1,7 @@
 import { SubjectEntity } from "src/curriculum/entities/subject.entity";
 import { RoomTypeEntity } from "src/rooms/entities/room-type.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { TeacherCourseSessionEntity } from "./course-session-teacher.entity";
+import { TeacherCourseSessionEntity } from "./teacher-course-session.entity";
 
 @Entity({name: 'session'})
 export class SessionEntity {
