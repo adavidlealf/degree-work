@@ -129,4 +129,8 @@ export class TeacherCourseSessionService {
     async deleteAll(): Promise<void> {
         await this.teacherCourseSessionRepo.clear();
     }
+
+    async deleteOne(id: number): Promise<any> {
+        return await this.teacherCourseSessionRepo.delete(id);
+    }
 }
