@@ -61,4 +61,8 @@ export class RoomTypeService {
     async deleteAll(): Promise<void> {
         await this.roomTypeRepo.clear();
     }
+
+    async deleteOne(id: number): Promise<any> {
+        return await this.roomTypeRepo.delete(id);
+    }
 }
