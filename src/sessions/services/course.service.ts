@@ -70,4 +70,8 @@ export class CourseService {
     async deleteAll(): Promise<void> {
         await this.courseRepo.clear();
     }
+
+    async deleteOne(id: number): Promise<any> {
+        return await this.courseRepo.delete(id);
+    }
 }
