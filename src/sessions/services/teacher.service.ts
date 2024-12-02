@@ -56,4 +56,8 @@ export class TeacherService {
     async deleteAll(): Promise<void> {
         await this.teacherRepo.clear();
     }
+
+    async deleteOne(id: number): Promise<any> {
+        return await this.teacherRepo.delete(id);
+    }
 }
