@@ -108,4 +108,8 @@ export class CurriculumService {
     async deleteAll(): Promise<void> {
         await this.curriculumRepo.clear();
     }
+
+    async deleteOne(id: number): Promise<any> {
+        return await this.curriculumRepo.delete(id);
+    }
 }
