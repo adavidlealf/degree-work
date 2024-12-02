@@ -114,4 +114,8 @@ export class RoomService {
     async deleteAll(): Promise<void> {
         await this.roomRepo.clear();
     }
+
+    async deleteOne(id: number): Promise<any> {
+        return await this.roomRepo.delete(id);
+    }
 }
