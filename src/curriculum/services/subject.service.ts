@@ -61,4 +61,8 @@ export class SubjectService {
     async deleteAll(): Promise<void> {
         await this.subjectRepo.clear();
     }
+
+    async deleteOne(id: number): Promise<any> {
+        return await this.subjectRepo.delete(id);
+    }
 }
