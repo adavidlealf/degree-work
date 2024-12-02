@@ -12,10 +12,10 @@ export class SessionService {
     constructor(
         @InjectRepository(SessionEntity)
         private readonly sessionRepo: Repository<SessionEntity>,
-        @InjectRepository(SubjectEntity)
-        private readonly subjectRepo: Repository<SubjectEntity>,
         @InjectRepository(RoomTypeEntity)
         private readonly typeRepo: Repository<RoomTypeEntity>,
+        @InjectRepository(SubjectEntity)
+        private readonly subjectRepo: Repository<SubjectEntity>,
     ){}
 
     async getAll(): Promise<SessionEntity[]> {

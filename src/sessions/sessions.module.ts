@@ -8,6 +8,8 @@ import { CourseService } from './services/course.service';
 import { SessionService } from './services/session.service';
 import { TeacherService } from './services/teacher.service';
 import { TeacherCourseSessionService } from './services/teacher-course-session.service';
+import { SubjectEntity } from 'src/curriculum/entities/subject.entity';
+import { RoomTypeEntity } from 'src/rooms/entities/room-type.entity';
 
 @Module({
     imports: [
@@ -16,6 +18,8 @@ import { TeacherCourseSessionService } from './services/teacher-course-session.s
             TeacherEntity,
             SessionEntity,
             TeacherCourseSessionEntity,
+            SubjectEntity,
+            RoomTypeEntity,
         ]),
     ],
     controllers: [
