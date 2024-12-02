@@ -42,7 +42,7 @@ export class BuildingService {
             where: {id: newDto.campus_id}
         })
         if(!campusFound){
-            throw new Error('Campus not found in creation of financial product');
+            throw new Error('Campus not found in creation of building');
         }
 
         const newEntity = new BuildingEntity();
@@ -56,7 +56,7 @@ export class BuildingService {
             where: {id: updatedDto.campus_id}
         })
         if(!campusFound){
-            throw new Error('Campus not found in update of financial product');
+            throw new Error('Campus not found in update of building');
         }
 
         const entityFound = await this.buildingRepo.findOneBy({id:id});
@@ -72,7 +72,7 @@ export class BuildingService {
                 where: {id: newDto.campus_id}
             })
             if(!campusFound){
-                throw new Error('Campus not found in bulk creation of financial product');
+                throw new Error('Campus not found in bulk creation of building');
             }
     
             const newEntity = new BuildingEntity();
