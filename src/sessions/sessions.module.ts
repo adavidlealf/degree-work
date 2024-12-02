@@ -10,6 +10,10 @@ import { TeacherService } from './services/teacher.service';
 import { TeacherCourseSessionService } from './services/teacher-course-session.service';
 import { SubjectEntity } from 'src/curriculum/entities/subject.entity';
 import { RoomTypeEntity } from 'src/rooms/entities/room-type.entity';
+import { CourseController } from './controllers/course.controller';
+import { SessionController } from './controllers/session.controller';
+import { TeacherController } from './controllers/teacher.controller';
+import { TeacherCourseSessionController } from './controllers/teacher-course-session.controller';
 
 @Module({
     imports: [
@@ -23,7 +27,10 @@ import { RoomTypeEntity } from 'src/rooms/entities/room-type.entity';
         ]),
     ],
     controllers: [
-
+        CourseController,
+        SessionController,
+        TeacherController,
+        TeacherCourseSessionController
     ],
     providers: [
         CourseService,

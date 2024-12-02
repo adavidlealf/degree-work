@@ -6,6 +6,9 @@ import { CurriculumEntity } from './entities/curriculum.entity';
 import { CurriculumService } from './services/curriculum.service';
 import { ProgramService } from './services/program.service';
 import { SubjectService } from './services/subject.service';
+import { CurriculumController } from './controllers/curriculum.controller';
+import { ProgramController } from './controllers/program.controller';
+import { SubjectController } from './controllers/subject.controller';
 
 @Module({
     imports: [
@@ -16,7 +19,9 @@ import { SubjectService } from './services/subject.service';
         ]),
     ],
     controllers: [
-
+        CurriculumController,
+        ProgramController,
+        SubjectController
     ],
     providers: [
         CurriculumService,
