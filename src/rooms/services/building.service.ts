@@ -86,4 +86,8 @@ export class BuildingService {
     async deleteAll(): Promise<void> {
         await this.buildingRepo.clear();
     }
+
+    async deleteOne(id: number): Promise<any> {
+        return await this.buildingRepo.delete(id);
+    }
 }
