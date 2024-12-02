@@ -56,4 +56,8 @@ export class CampusService {
     async deleteAll(): Promise<void> {
         await this.campusRepo.clear();
     }
+
+    async deleteOne(id: number): Promise<any> {
+        return await this.campusRepo.delete(id);
+    }
 }
