@@ -108,4 +108,8 @@ export class SessionService {
     async deleteAll(): Promise<void> {
         await this.sessionRepo.clear();
     }
+
+    async deleteOne(id: number): Promise<any> {
+        return await this.sessionRepo.delete(id);
+    }
 }
