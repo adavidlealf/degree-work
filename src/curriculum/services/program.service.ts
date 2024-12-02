@@ -56,4 +56,8 @@ export class ProgramService {
     async deleteAll(): Promise<void> {
         await this.programRepo.clear();
     }
+
+    async deleteOne(id: number): Promise<any> {
+        return await this.programRepo.delete(id);
+    }
 }

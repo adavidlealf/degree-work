@@ -1,31 +1,31 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res } from '@nestjs/common';
-import { CurriculumService } from '../services/curriculum.service';
-import { CreateCurriculumDto } from '../dto/create-curriculum-dto';
+import { ProgramService } from '../services/program.service';
+import { CreateProgramDto } from '../dto/create-program-dto';
 
-@Controller('curriculum')
-export class CurriculumController {
+@Controller('program')
+export class ProgramController {
 
-    constructor(private service: CurriculumService){}
+    constructor(private service: ProgramService){}
 
     @Post()
-    create(@Body() dto: CreateCurriculumDto, @Res() response){
+    create(@Body() dto: CreateProgramDto, @Res() response){
         this.service.createOne(dto)
         .then( one => {
             response.status(HttpStatus.CREATED).json(one);
         }).catch((e) => {
             response.status(HttpStatus.FORBIDDEN).json(
-                {mensaje: `Error in the creation of the curriculum: ${e}`});
+                {mensaje: `Error in the creation of the program: ${e}`});
         });
     }
 
     @Post('bulk')
-    createMany(@Body() dtos: CreateCurriculumDto[], @Res() response) {
+    createMany(@Body() dtos: CreateProgramDto[], @Res() response) {
         this.service.createMany(dtos)
         .then( ones => {
             response.status(HttpStatus.CREATED).json(ones);
         }).catch((e) => {
             response.status(HttpStatus.FORBIDDEN).json(
-                {mensaje: `Error in the bulk creation of the curriculums: ${e}`});
+                {mensaje: `Error in the bulk creation of the programs: ${e}`});
         });
     }
 
@@ -36,7 +36,7 @@ export class CurriculumController {
             response.status(HttpStatus.OK).json(list);
         }).catch( (e) => {
             response.status(HttpStatus.FORBIDDEN).json(
-                {mensaje: `Error in the getting of the curriculums: ${e}`});
+                {mensaje: `Error in the getting of the programs: ${e}`});
         });
     }
 
@@ -47,18 +47,18 @@ export class CurriculumController {
             response.status(HttpStatus.OK).json(one);
         }).catch( (e) => {
             response.status(HttpStatus.FORBIDDEN).json(
-                {mensaje: `Error in the getting of the curriculum by id: ${e}`});
+                {mensaje: `Error in the getting of the program by id: ${e}`});
         });
     }
 
     @Put(':id')
-    update(@Body() dto: CreateCurriculumDto, @Res() response, @Param('id') id : number){
+    update(@Body() dto: CreateProgramDto, @Res() response, @Param('id') id : number){
         this.service.updateOne(id, dto)
         .then( updated => {
             response.status(HttpStatus.OK).json(updated);
         }).catch( (e) => {
             response.status(HttpStatus.FORBIDDEN).json(
-                {mensaje: `Error in the modification of the curriculum: ${e}`});
+                {mensaje: `Error in the modification of the program: ${e}`});
         });
     }
 
@@ -69,7 +69,7 @@ export class CurriculumController {
             response.status(HttpStatus.OK).json(res);
         }).catch( (e) => {
             response.status(HttpStatus.FORBIDDEN).json(
-                {mensaje: `Error in the elimination of the curriculum: ${e}`});
+                {mensaje: `Error in the elimination of the program: ${e}`});
         });
     }
 
@@ -80,7 +80,7 @@ export class CurriculumController {
             response.status(HttpStatus.OK).json(res);
         }).catch( (e) => {
             response.status(HttpStatus.FORBIDDEN).json(
-                {mensaje: `Error in the elimination of all the curriculums: ${e}`});
+                {mensaje: `Error in the elimination of all the programs: ${e}`});
         });
     }
 }
