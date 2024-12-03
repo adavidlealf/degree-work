@@ -31,6 +31,14 @@ export class ProgramService {
         })
     }
 
+    async getByName(name: string): Promise<ProgramEntity> {
+        return await this.programRepo.findOne({
+            where: {
+                name: name
+            }
+        })
+    }
+
     async createOne(newDto: CreateProgramDto): Promise<ProgramEntity> {
         const newEntity = new ProgramEntity();
         newEntity.name = newDto.name;

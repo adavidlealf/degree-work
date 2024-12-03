@@ -27,6 +27,6 @@ import { SubjectController } from './controllers/subject.controller';
         CurriculumService,
         ProgramService,
         SubjectService
-    ],
+    ]
 })
 export class CurriculumModule {}

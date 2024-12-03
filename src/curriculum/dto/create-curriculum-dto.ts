@@ -1,5 +1,5 @@
 export class CreateCurriculumDto {
-    readonly term: number;
-    readonly subject_id: number;
-    readonly program_id: number;
+    term: number;
+    subject_id: number;
+    program_id: number;
 }

@@ -33,6 +33,22 @@ export class SubjectService {
         })
     }
 
+    async getByCode(code: string): Promise<SubjectEntity> {
+        return await this.subjectRepo.findOne({
+            where: {
+                code: code
+            }
+        })
+    }
+
+    async getByName(name: string): Promise<SubjectEntity> {
+        return await this.subjectRepo.findOne({
+            where: {
+                name: name
+            }
+        })
+    }
+
     async createOne(newDto: CreateSubjectDto): Promise<SubjectEntity> {
         const newEntity = new SubjectEntity();
         newEntity.name = newDto.name;

@@ -14,7 +14,7 @@ export class CurriculumEntity {
         () => SubjectEntity,
         (subject: SubjectEntity) => subject.curriculums,
     {
-        onDelete: 'RESTRICT'
+        onDelete: 'CASCADE'
     })
     @JoinColumn({name: 'subject_id'})
     subject: SubjectEntity;
@@ -23,7 +23,7 @@ export class CurriculumEntity {
         () => ProgramEntity,
         (program: ProgramEntity) => program.curriculums,
     {
-        onDelete: 'RESTRICT'
+        onDelete: 'CASCADE'
     })
     @JoinColumn({name: 'program_id'})
     program: ProgramEntity;

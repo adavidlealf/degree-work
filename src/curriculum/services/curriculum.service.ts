@@ -39,6 +39,15 @@ export class CurriculumService {
         })
     }
 
+    async getBySubjectProgram(subject_id: number, program_id: number): Promise<CurriculumEntity> {
+        return await this.curriculumRepo.findOne({
+            where: {
+                subject: {id: subject_id},
+                program: {id: program_id},
+            }
+        })
+    }
+
     async createOne(newDto: CreateCurriculumDto): Promise<CurriculumEntity> {
         const subjectFound = await this.subjectRepo.findOne({
             where: {id: newDto.subject_id}
@@ -111,5 +120,9 @@ export class CurriculumService {
 
     async deleteOne(id: number): Promise<any> {
         return await this.curriculumRepo.delete(id);
+    }
+
+    async getSize(): Promise<number> {
+        return await this.curriculumRepo.count();
     }
 }
