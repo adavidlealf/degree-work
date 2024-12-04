@@ -118,4 +118,8 @@ export class RoomService {
     async deleteOne(id: number): Promise<any> {
         return await this.roomRepo.delete(id);
     }
+
+    async getSize(): Promise<number> {
+        return await this.roomRepo.count();
+    }
 }

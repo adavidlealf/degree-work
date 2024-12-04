@@ -1,3 +1,3 @@
 export class CreateCampusDto {
-    readonly name: string;
+    name: string;
 }

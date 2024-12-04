@@ -1,6 +1,6 @@
 export class CreateRoomDto {
-    readonly name: string;
-    readonly capacity: number;
-    readonly building_id: number;
-    readonly type_id: number;
+    name: string;
+    capacity: number;
+    building_id: number;
+    type_id: number;
 }

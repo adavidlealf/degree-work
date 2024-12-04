@@ -1,4 +1,4 @@
 export class CreateBuildingDto {
-    readonly name: string;
-    readonly campus_id: number;
+    name: string;
+    campus_id: number;
 }

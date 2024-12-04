@@ -19,34 +19,46 @@ import { TeacherEntity } from 'src/sessions/entities/teacher.entity';
 import { CourseEntity } from 'src/sessions/entities/course.entity';
 import { SessionEntity } from 'src/sessions/entities/session.entity';
 import { TeacherCourseSessionEntity } from 'src/sessions/entities/teacher-course-session.entity';
+import { RoomEntity } from 'src/rooms/entities/room.entity';
+import { CampusEntity } from 'src/rooms/entities/campus.entity';
+import { CampusService } from 'src/rooms/services/campus.service';
+import { RoomService } from 'src/rooms/services/room.service';
+import { BuildingService } from 'src/rooms/services/building.service';
+import { BuildingEntity } from 'src/rooms/entities/building.entity';
 
 @Module({
   imports: [
       TypeOrmModule.forFeature([
-          SubjectEntity,
-          ProgramEntity,
-          CurriculumEntity,
-          RoomTypeEntity,
-          TeacherEntity,
+          BuildingEntity,
+          CampusEntity,
           CourseEntity,
+          CurriculumEntity,
+          ProgramEntity,
+          RoomEntity,
+          RoomTypeEntity,
           SessionEntity,
+          SubjectEntity,
           TeacherCourseSessionEntity,
+          TeacherEntity,
       ]),
   ],
   controllers: [
     UploadController
   ],
   providers: [
-    UploadService,
-    SubjectService,
-    ProgramService,
-    CurriculumService,
-    RoomTypeService,
-    TeacherService,
+    BuildingService,
+    CampusService,
     CourseService,
-    SessionService,
-    TeacherCourseSessionService,
+    CurriculumService,
     LogGateway,
+    ProgramService,
+    RoomService,
+    RoomTypeService,
+    SessionService,
+    SubjectService,
+    TeacherCourseSessionService,
+    TeacherService,
+    UploadService,
   ]
 })
 export class ImportModule {}

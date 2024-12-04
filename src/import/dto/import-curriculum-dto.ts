@@ -1,6 +1,6 @@
 export class ImportCurriculumDto {
-    subject_name: string;
-    subject_code: string;
-    program_name: string;
     curriculum_term: number;
+    program_name: string;
+    subject_code: string;
+    subject_name: string;
 }

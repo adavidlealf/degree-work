@@ -30,6 +30,14 @@ export class CampusService {
             }
         })
     }
+    
+    async getByName(name: string): Promise<CampusEntity> {
+        return await this.campusRepo.findOne({
+            where: {
+                name: name
+            },
+        })
+    }
 
     async createOne(newDto: CreateCampusDto): Promise<CampusEntity> {
         const newEntity = new CampusEntity();

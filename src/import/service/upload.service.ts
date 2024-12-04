@@ -18,6 +18,13 @@ import { SessionService } from 'src/sessions/services/session.service';
 import { CreateSessionDto } from 'src/sessions/dto/create-session-dto';
 import { CreateTeacherCourseSessionDto } from 'src/sessions/dto/create-teacher-course-session-dto';
 import { TeacherCourseSessionService } from 'src/sessions/services/teacher-course-session.service';
+import { ImportRoomDto } from '../dto/import-room-dto';
+import { CampusService } from 'src/rooms/services/campus.service';
+import { CreateCampusDto } from 'src/rooms/dto/create-campus-dto';
+import { BuildingService } from 'src/rooms/services/building.service';
+import { CreateBuildingDto } from 'src/rooms/dto/create-building-dto';
+import { CreateRoomDto } from 'src/rooms/dto/create-room-dto';
+import { RoomService } from 'src/rooms/services/room.service';
 
 @Injectable()
 export class UploadService {
@@ -26,11 +33,14 @@ export class UploadService {
         private readonly currServ: CurriculumService,
         private readonly subjectServ: SubjectService,
         private readonly programServ: ProgramService,
+        private readonly roomServ: RoomService,
         private readonly roomTypeServ: RoomTypeService,
         private readonly teacherServ: TeacherService,
         private readonly courseServ: CourseService,
         private readonly sessionServ: SessionService,
         private readonly tcsServ: TeacherCourseSessionService,
+        private readonly campusServ: CampusService,
+        private readonly buildingServ: BuildingService,
         private readonly logGateway: LogGateway,
     ){}
 
@@ -156,7 +166,8 @@ export class UploadService {
                 } else {
                     throw new Error('fila.group_size debe ser mayor que 0');
                 }
-                if(this.hasNonWhitespaceCharacters(fila.group_name)){
+                if(fila.hasOwnProperty('group_name') &&
+                    this.hasNonWhitespaceCharacters(fila.group_name)){
                     dto.group_name = fila.group_name;
                 } else {
                     dto.group_name = indice.toString();
@@ -228,5 +239,103 @@ export class UploadService {
         console.log(`Total registros teachers course sessions: ${tcsCount}`);
         this.logGateway.sendLog(`Total registros teachers course sessions: ${tcsCount}`);
         return tcsCount;
+    }
+
+    async generateRooms(data: any): Promise<number> {
+        const def_max_occup_perc: number = 0.8;
+        let indice: number = 1;
+        const decima: number = Math.floor(data.length/10);
+        for(const fila of data) {
+            if(fila.hasOwnProperty('campus_name') && 
+            fila.hasOwnProperty('room_capacity') &&
+            fila.hasOwnProperty('room_name') &&
+            fila.hasOwnProperty('roomtype_name')) {
+                const dto = new ImportRoomDto();
+                // Validaciones
+                if(this.hasNonWhitespaceCharacters(fila.campus_name)){
+                    dto.campus_name = fila.campus_name;
+                } else {
+                    throw new Error('fila.campus_name no puede ser vacio');
+                }
+                if(fila.room_capacity>0){
+                    dto.room_capacity = fila.room_capacity;
+                } else {
+                    throw new Error('fila.room_capacity debe ser mayor que 0');
+                }
+                if(this.hasNonWhitespaceCharacters(fila.room_name)){
+                    dto.room_name = fila.room_name;
+                } else {
+                    throw new Error('fila.room_name no puede ser vacio');
+                }
+                if(this.hasNonWhitespaceCharacters(fila.roomtype_name)){
+                    dto.roomtype_name = fila.roomtype_name;
+                } else {
+                    throw new Error('fila.roomtype_name no puede ser vacio');
+                }
+                if(fila.hasOwnProperty('building_name') &&
+                    this.hasNonWhitespaceCharacters(fila.building_name)){
+                    dto.building_name = fila.building_name;
+                } else {
+                    dto.building_name = fila.campus_name;
+                }
+                if(fila.hasOwnProperty('roomtype_max_occup_perc') &&
+                    fila.roomtype_max_occup_perc>=0 && fila.roomtype_max_occup_perc<=1){
+                    dto.roomtype_max_occup_perc = fila.roomtype_max_occup_perc;
+                } else {
+                    dto.roomtype_max_occup_perc = def_max_occup_perc;
+                }
+
+                // Creacion campus
+                let campusFound = await this.campusServ.getByName(dto.campus_name);
+                if(!campusFound){
+                    const dtoCampus: CreateCampusDto = new CreateCampusDto();
+                    dtoCampus.name = dto.campus_name;
+                    campusFound = await this.campusServ.createOne(dtoCampus);
+                }
+
+                // Creacion campus
+                let buildingFound = await this.buildingServ.getByName(dto.building_name);
+                if(!buildingFound){
+                    const dtoBuilding: CreateBuildingDto = new CreateBuildingDto();
+                    dtoBuilding.name = dto.building_name;
+                    dtoBuilding.campus_id = campusFound.id;
+                    buildingFound = await this.buildingServ.createOne(dtoBuilding);
+                }
+
+                // Creacion roomtype
+                let roomTypeFound = await this.roomTypeServ.getByName(dto.roomtype_name);
+                if(!roomTypeFound){
+                    const dtoRoomType: CreateRoomTypeDto = new CreateRoomTypeDto();
+                    dtoRoomType.name = dto.building_name;
+                    dtoRoomType.max_occup_perc = dto.roomtype_max_occup_perc;
+                    roomTypeFound = await this.roomTypeServ.createOne(dtoRoomType);
+                }
+
+                // Create room
+                const dtoRoom: CreateRoomDto = new CreateRoomDto();
+                dtoRoom.type_id = roomTypeFound.id;
+                dtoRoom.building_id = buildingFound.id;
+                dtoRoom.name = dto.room_name;
+                dtoRoom.capacity = dto.room_capacity;
+
+                this.roomServ.createOne(dtoRoom)
+                .then(() => {
+                    if(indice%decima===0){
+                        this.logGateway.sendLog(`Filas procesadas: ${indice} de ${data.length}`);
+                        this.logGateway.sendProgress((indice/(data.length))*100);
+                    }
+                });
+            } else {
+                this.logGateway.sendLog('Room no cuenta con las columnas requeridas');
+                throw new Error('Room no cuenta con las columnas requeridas');
+            }
+            indice += 1;
+        }
+        this.logGateway.sendLog('Proceso de sooms completado');
+        this.logGateway.sendProgress(100);
+        const roomsCount = await this.roomServ.getSize();
+        console.log(`Total registros Rooms: ${roomsCount}`);
+        this.logGateway.sendLog(`Total registros Rooms: ${roomsCount}`);
+        return roomsCount;
     }
 }

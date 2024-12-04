@@ -37,6 +37,14 @@ export class BuildingService {
         })
     }
 
+    async getByName(name: string): Promise<BuildingEntity> {
+        return await this.buildingRepo.findOne({
+            where: {
+                name: name
+            },
+        })
+    }
+
     async createOne(newDto: CreateBuildingDto): Promise<BuildingEntity> {
         const campusFound = await this.campusRepo.findOne({
             where: {id: newDto.campus_id}
