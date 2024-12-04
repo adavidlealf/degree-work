@@ -6,6 +6,7 @@ import { CreateSubjectDto } from 'src/curriculum/dto/create-subject-dto';
 import { CreateProgramDto } from 'src/curriculum/dto/create-program-dto';
 import { CreateCurriculumDto } from 'src/curriculum/dto/create-curriculum-dto';
 import { CurriculumService } from 'src/curriculum/services/curriculum.service';
+import { LogGateway } from '../gateway/log.gateway';
 
 @Injectable()
 export class UploadService {
@@ -14,13 +15,16 @@ export class UploadService {
         private readonly currServ: CurriculumService,
         private readonly subjectServ: SubjectService,
         private readonly programServ: ProgramService,
+        private readonly logGateway: LogGateway,
     ){}
 
     hasNonWhitespaceCharacters(str: string): boolean {
         return str.trim().length > 0;
     }
 
-    async generateCurriculum(data: any) {
+    async generateCurriculum(data: any): Promise<number> {
+        let indice: number = 1;
+        const decima: number = Math.floor(data.length/10);
         for(const fila of data) {
             if(fila.hasOwnProperty('subject_name') && 
             fila.hasOwnProperty('subject_code') &&
@@ -75,12 +79,21 @@ export class UploadService {
                 } else if (currFound.term>dto.curriculum_term){
                     this.currServ.updateOne(currFound.id, dtoCurr);
                 }
+                if(indice%decima===0){
+                    this.logGateway.sendLog(`Filas procesadas: ${indice} de ${data.length}`);
+                    this.logGateway.sendProgress((indice/(data.length))*100);
+                }
             } else {
+                this.logGateway.sendLog('Curriculum no cuenta con las columnas requeridas');
                 throw new Error('Curriculum no cuenta con las columnas requeridas');
             }
+            indice += 1;
         }
+        this.logGateway.sendLog('Proceso completado');
+        this.logGateway.sendProgress(100);
         const currCount = await this.currServ.getSize();
         console.log(`Total registros curriculum: ${currCount}`);
+        this.logGateway.sendLog(`Total registros curriculum: ${currCount}`);
         return currCount;
     }
 }

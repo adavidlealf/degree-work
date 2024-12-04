@@ -7,8 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const uploadForm = document.querySelector('#uploadForm');
     // Boton de subir archivo
     const fileInput = document.querySelector('#fileInput');
-    // Barra de progreso
-    const progressBar = document.querySelector('#progressBar');
 
     /**
      * EVENTOS
@@ -22,9 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
             alert('Por favor selecciona un archivo xlsx');
             return;
         }
-
-        progressBar.style.display = 'block';
-        progressBar.value = 0;
 
         const formData = new FormData();
         formData.append('file', file);
@@ -43,8 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log(response.json);
         } catch (error) {
             console.error('Error al subir el archivo:', error);
-        } finally {
-            progressBar.style.display = 'none';
         }
     });
 })

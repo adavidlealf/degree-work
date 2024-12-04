@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SubjectEntity } from 'src/curriculum/entities/subject.entity';
 import { ProgramEntity } from 'src/curriculum/entities/program.entity';
 import { CurriculumEntity } from 'src/curriculum/entities/curriculum.entity';
+import { LogGateway } from './gateway/log.gateway';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { CurriculumEntity } from 'src/curriculum/entities/curriculum.entity';
     SubjectService,
     ProgramService,
     CurriculumService,
+    LogGateway,
   ]
 })
 export class ImportModule {}

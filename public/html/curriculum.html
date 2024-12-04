@@ -21,10 +21,21 @@
     </form>
 
     <!-- Barra de progreso -->
-    <progress id="progressBar" value="0" max="100" style="display: none;"></progress>
+    <div>
+        <div id="progress-container" style="border: 1px solid #ccc; width: 100%; height: 30px; position: relative;">
+            <div id="progress-bar" style="background: green; width: 0%; height: 100%; text-align: center; color: white;">
+                0%
+            </div>
+        </div>
+    </div>
+    
+    <div id="log-container" style="margin-top: 20px; border: 1px solid #ccc; padding: 10px; height: 200px; overflow-y: scroll;">
+        <!-- Logs aparecerán aquí -->
+    </div>
     
     <!-- Insercion de script -->
     <script type="module" src="../js/scriptCurriculum.js"></script>
+    <script type="module" src="../js/scriptSocket.js"></script>
 </body>
 
 </html>

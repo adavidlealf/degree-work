@@ -10,41 +10,35 @@ export class UploadController {
 
     @Post('curriculum')
     @UseInterceptors(FileInterceptor('file')) // 'file' es el nombre del campo en el formulario
-    async uploadFileCurriculum(@UploadedFile() file: Express.Multer.File, @Res() response) {
-        try {
-            // Leer el archivo Excel
-            const workbook = XLSX.read(file.buffer, { type: 'buffer' });
-            let bandera = false;
-            // Iterar por las hojas del archivo
-            workbook.SheetNames.forEach((sheetName) => {
-                if (sheetName === 'curriculum') {
-                    const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-                    console.log(`${sheetName}`);
-                    bandera = true;
-                    this.service.generateCurriculum(data)
-                    .then(rta => {
-                        response.status(HttpStatus.CREATED).json(rta);
-                        console.log('Funciono en controller!');
-                    }).catch(err => {
-                        response.status(HttpStatus.FORBIDDEN).json({
-                            mensaje: `Error in generateCurriculum: ${err}`
-                        });
-                        console.log(`Error in generateCurriculum: ${err}`);
+    uploadFileCurriculum(@UploadedFile() file: Express.Multer.File, @Res() response) {
+        // Leer el archivo Excel
+        const workbook = XLSX.read(file.buffer, { type: 'buffer' });
+        // Bandera que indica cuando se encuentre la hoja titulada 'curriculum'
+        let bandera = false;
+        // Iterar por las hojas del archivo
+        for(const sheetName of workbook.SheetNames){
+            if (sheetName === 'curriculum') {
+                const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+                console.log(`${sheetName} sheet found`);
+                bandera = true;
+                this.service.generateCurriculum(data)
+                .then((rta) => {
+                    console.log(`rta: ${rta}`);
+                    response.status(HttpStatus.CREATED).json(rta);
+                }).catch((err) => {
+                    console.log(`Error in generateCurriculum: ${err}`);
+                    response.status(HttpStatus.FORBIDDEN).json({
+                        mensaje: `Error in generateCurriculum: ${err}`
                     });
-                    return;
-                }
-            });
-            if(!bandera){
-                response.status(HttpStatus.FORBIDDEN).json({
-                    mensaje: `No se encontro la hoja 'curriculum'`
                 });
-                console.log(`No se encontro la hoja 'curriculum'`);
+                break;
             }
-        } catch (error) {
+        };
+        if(!bandera){
+            console.log(`No se encontro la hoja 'curriculum'`);
             response.status(HttpStatus.FORBIDDEN).json({
-                mensaje: `Ocurrio un error en uploadFileCurriculum: ${error}`
+                mensaje: `No se encontro la hoja 'curriculum'`
             });
-            console.log(`Ocurrio un error en uploadFileCurriculum: ${error}`);
         }
     }
 
