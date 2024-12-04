@@ -1,0 +1,36 @@
+[
+    { 
+        "column": "subject_code",
+        "definition": "Código de la asignatura de la sesión.",
+        "required": "SI"
+    },
+    { 
+        "column": "roomtype_name", 
+        "definition": "Nombre del tipo de salón requerido por la sesión.", 
+        "required": "SI" 
+    },
+    { 
+        "column": "timeslots", 
+        "definition": "Número de bloques de tiempo de la sesión. Solo pueden ser 1 o 2.", 
+        "required": "SI" },
+    { 
+        "column": "teacher_name", 
+        "definition": "Nombre del/a profesor/a que dicta la sesión del curso.", 
+        "required": "SI" 
+    },
+    { 
+        "column": "group_name", 
+        "definition": "Nombre del grupo del curso. Si no se da un nombre, se le da el mismo NRC.", 
+        "required": "NO" 
+    },
+    { 
+        "column": "group_size", 
+        "definition": "Tamaño del grupo del curso (cantidad de estudiantes).", 
+        "required": "SI" 
+    },
+    { 
+        "column": "nrc", 
+        "definition": "Código del grupo de curso (NRC). Debe ser un número entero único.", 
+        "required": "SI" 
+    }
+]

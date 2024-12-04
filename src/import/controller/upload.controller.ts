@@ -42,4 +42,38 @@ export class UploadController {
         }
     }
 
+    @Post('session')
+    @UseInterceptors(FileInterceptor('file')) // 'file' es el nombre del campo en el formulario
+    uploadFileSession(@UploadedFile() file: Express.Multer.File, @Res() response) {
+        // Leer el archivo Excel
+        const workbook = XLSX.read(file.buffer, { type: 'buffer' });
+        // Bandera que indica cuando se encuentre la hoja titulada 'session'
+        let bandera = false;
+        // Iterar por las hojas del archivo
+        for(const sheetName of workbook.SheetNames){
+            if (sheetName === 'session') {
+                const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+                console.log(`${sheetName} sheet found`);
+                bandera = true;
+                this.service.generateSessions(data)
+                .then((rta) => {
+                    console.log(`rta: ${rta}`);
+                    response.status(HttpStatus.CREATED).json(rta);
+                }).catch((err) => {
+                    console.log(`Error in generateSession: ${err}`);
+                    response.status(HttpStatus.FORBIDDEN).json({
+                        mensaje: `Error in generateSession: ${err}`
+                    });
+                });
+                break;
+            }
+        };
+        if(!bandera){
+            console.log(`No se encontro la hoja 'session'`);
+            response.status(HttpStatus.FORBIDDEN).json({
+                mensaje: `No se encontro la hoja 'session'`
+            });
+        }
+    }
+
 }
