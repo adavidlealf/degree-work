@@ -76,4 +76,38 @@ export class UploadController {
         }
     }
 
+    @Post('room')
+    @UseInterceptors(FileInterceptor('file')) // 'file' es el nombre del campo en el formulario
+    uploadFileRoom(@UploadedFile() file: Express.Multer.File, @Res() response) {
+        // Leer el archivo Excel
+        const workbook = XLSX.read(file.buffer, { type: 'buffer' });
+        // Bandera que indica cuando se encuentre la hoja titulada 'session'
+        let bandera = false;
+        // Iterar por las hojas del archivo
+        for(const sheetName of workbook.SheetNames){
+            if (sheetName === 'room') {
+                const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+                console.log(`${sheetName} sheet found`);
+                bandera = true;
+                this.service.generateRooms(data)
+                .then((rta) => {
+                    console.log(`rta: ${rta}`);
+                    response.status(HttpStatus.CREATED).json(rta);
+                }).catch((err) => {
+                    console.log(`Error in generateRoom: ${err}`);
+                    response.status(HttpStatus.FORBIDDEN).json({
+                        mensaje: `Error in generateRoom: ${err}`
+                    });
+                });
+                break;
+            }
+        };
+        if(!bandera){
+            console.log(`No se encontro la hoja 'room'`);
+            response.status(HttpStatus.FORBIDDEN).json({
+                mensaje: `No se encontro la hoja 'room'`
+            });
+        }
+    }
+
 }

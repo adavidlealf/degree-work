@@ -1,0 +1,31 @@
+[
+    { 
+        "column": "roomtype_name",
+        "definition": "Nombre de Tipo de salón.",
+        "required": "SI"
+    },
+    { 
+        "column": "tr_max_occup_perc", 
+        "definition": "Porcentaje de ocupacion maxima de tipo de salon. Debe ser numero decimal que represente un valor porcentual, es decir, de 0 a 1. Si no se da, se asigna por defecto a 80%", 
+        "required": "NO" 
+    },
+    { 
+        "column": "building_name", 
+        "definition": "Nombre del edificio del salón. Si un edificio es un campus en si mismo, no se pone este campo, y la aplicacion creara un edificio con el mismo nombre del campus.", 
+        "required": "NO" },
+    { 
+        "column": "campus_name", 
+        "definition": "Nombre del Campus del edificio del salón.", 
+        "required": "SI" 
+    },
+    { 
+        "column": "room_name", 
+        "definition": "Nombre del salón.", 
+        "required": "SI" 
+    },
+    { 
+        "column": "room_capacity", 
+        "definition": "Aforo del salón", 
+        "required": "SI"
+    }
+]
