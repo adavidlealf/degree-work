@@ -1,4 +1,4 @@
 export class CreateRoomTypeDto {
-    readonly name: string;
-    readonly max_occup_perc: number;
+    name: string;
+    max_occup_perc: number;
 }

@@ -1,3 +1,3 @@
 export class CreateTeacherDto {
-    readonly name: string;
+    name: string;
 }

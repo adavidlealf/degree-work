@@ -133,4 +133,8 @@ export class TeacherCourseSessionService {
     async deleteOne(id: number): Promise<any> {
         return await this.teacherCourseSessionRepo.delete(id);
     }
+
+    async getSize(): Promise<number> {
+        return await this.teacherCourseSessionRepo.count();
+    }
 }

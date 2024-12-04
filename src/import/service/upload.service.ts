@@ -7,6 +7,17 @@ import { CreateProgramDto } from 'src/curriculum/dto/create-program-dto';
 import { CreateCurriculumDto } from 'src/curriculum/dto/create-curriculum-dto';
 import { CurriculumService } from 'src/curriculum/services/curriculum.service';
 import { LogGateway } from '../gateway/log.gateway';
+import { ImportSessionDto } from '../dto/import-session-dto';
+import { RoomTypeService } from 'src/rooms/services/room-type.service';
+import { CreateRoomTypeDto } from 'src/rooms/dto/create-room-type-dto';
+import { TeacherService } from 'src/sessions/services/teacher.service';
+import { CourseService } from 'src/sessions/services/course.service';
+import { CreateTeacherDto } from 'src/sessions/dto/create-teacher-dto';
+import { CreateCourseDto } from 'src/sessions/dto/create-course-dto';
+import { SessionService } from 'src/sessions/services/session.service';
+import { CreateSessionDto } from 'src/sessions/dto/create-session-dto';
+import { CreateTeacherCourseSessionDto } from 'src/sessions/dto/create-teacher-course-session-dto';
+import { TeacherCourseSessionService } from 'src/sessions/services/teacher-course-session.service';
 
 @Injectable()
 export class UploadService {
@@ -15,6 +26,11 @@ export class UploadService {
         private readonly currServ: CurriculumService,
         private readonly subjectServ: SubjectService,
         private readonly programServ: ProgramService,
+        private readonly roomTypeServ: RoomTypeService,
+        private readonly teacherServ: TeacherService,
+        private readonly courseServ: CourseService,
+        private readonly sessionServ: SessionService,
+        private readonly tcsServ: TeacherCourseSessionService,
         private readonly logGateway: LogGateway,
     ){}
 
@@ -89,11 +105,128 @@ export class UploadService {
             }
             indice += 1;
         }
-        this.logGateway.sendLog('Proceso completado');
+        this.logGateway.sendLog('Proceso de curriculums completado');
         this.logGateway.sendProgress(100);
         const currCount = await this.currServ.getSize();
         console.log(`Total registros curriculum: ${currCount}`);
         this.logGateway.sendLog(`Total registros curriculum: ${currCount}`);
         return currCount;
+    }
+
+    async generateSessions(data: any): Promise<number> {
+        const def_max_occup_perc: number = 0.8;
+        let indice: number = 1;
+        const decima: number = Math.floor(data.length/10);
+        for(const fila of data) {
+            if(fila.hasOwnProperty('subject_code') && 
+            fila.hasOwnProperty('roomtype_name') &&
+            fila.hasOwnProperty('timeslots') &&
+            fila.hasOwnProperty('teacher_name') &&
+            fila.hasOwnProperty('group_size') &&
+            fila.hasOwnProperty('nrc')) {
+                const dto = new ImportSessionDto();
+                // Validaciones
+                if(this.hasNonWhitespaceCharacters(fila.subject_code)){
+                    dto.subject_code = fila.subject_code;
+                } else {
+                    throw new Error('fila.subject_code no puede ser vacio');
+                }
+                if(this.hasNonWhitespaceCharacters(fila.roomtype_name)){
+                    dto.roomtype_name = fila.roomtype_name;
+                } else {
+                    throw new Error('fila.roomtype_name no puede ser vacio');
+                }
+                if(fila.timeslots==1 || fila.timeslots==2){
+                    dto.timeslots = fila.timeslots;
+                } else {
+                    throw new Error('fila.timeslots no puede ser diferente de 1 o 2');
+                }
+                if(this.hasNonWhitespaceCharacters(fila.teacher_name)){
+                    dto.teacher_name = fila.teacher_name;
+                } else {
+                    throw new Error('fila.teacher_name no puede ser vacio');
+                }
+                if(fila.group_size>0){
+                    dto.group_size = fila.group_size;
+                } else {
+                    throw new Error('fila.group_size debe ser mayor que 0');
+                }
+                if(fila.nrc>0){
+                    dto.nrc = fila.group_size;
+                } else {
+                    throw new Error('fila.group_size debe ser mayor que 0');
+                }
+                if(this.hasNonWhitespaceCharacters(fila.group_name)){
+                    dto.group_name = fila.group_name;
+                } else {
+                    dto.group_name = indice.toString();
+                }
+
+                // Creacion subject
+                let subjectFound = await this.subjectServ.getByCode(dto.subject_code);
+                if(!subjectFound){
+                    const dtoSubject: CreateSubjectDto = new CreateSubjectDto();
+                    dtoSubject.name = dto.subject_code;
+                    dtoSubject.code = dto.subject_code;
+                    subjectFound = await this.subjectServ.createOne(dtoSubject);
+                }
+                // Creacion roomtype
+                let roomtTypeFound = await this.roomTypeServ.getByName(dto.roomtype_name);
+                if(!roomtTypeFound){
+                    const dtoRoomType: CreateRoomTypeDto = new CreateRoomTypeDto();
+                    dtoRoomType.name = dto.roomtype_name;
+                    dtoRoomType.max_occup_perc = def_max_occup_perc;
+                    roomtTypeFound = await this.roomTypeServ.createOne(dtoRoomType);
+                }
+
+                // Creacion teacher
+                let teacherFound = await this.teacherServ.getByName(dto.teacher_name);
+                if(!teacherFound){
+                    const dtoTeacher: CreateTeacherDto = new CreateTeacherDto();
+                    dtoTeacher.name = dto.teacher_name;
+                    teacherFound = await this.teacherServ.createOne(dtoTeacher);
+                }
+
+                // Creacion course
+                let courseFound = await this.courseServ.getByNrc(dto.nrc);
+                if(!courseFound){
+                    const dtoCourse: CreateCourseDto = new CreateCourseDto();
+                    dtoCourse.group_name = dto.group_name;
+                    dtoCourse.group_size = dto.group_size;
+                    dtoCourse.nrc = dto.nrc;
+                    courseFound = await this.courseServ.createOne(dtoCourse);
+                }
+
+                // Create Session
+                const dtoSession: CreateSessionDto = new CreateSessionDto();
+                dtoSession.roomtype_id = roomtTypeFound.id;
+                dtoSession.subject_id = subjectFound.id;
+                dtoSession.timeslots = dto.timeslots;
+                const sessionCreated = await this.sessionServ.createOne(dtoSession);
+
+                // Create teacher - course - session
+                const dtoTeacherCourseSession: CreateTeacherCourseSessionDto = new CreateTeacherCourseSessionDto();
+                dtoTeacherCourseSession.course_id = courseFound.id;
+                dtoTeacherCourseSession.teacher_id = teacherFound.id;
+                dtoTeacherCourseSession.session_id = sessionCreated.id;
+                this.tcsServ.createOne(dtoTeacherCourseSession)
+                .then(() => {
+                    if(indice%decima===0){
+                        this.logGateway.sendLog(`Filas procesadas: ${indice} de ${data.length}`);
+                        this.logGateway.sendProgress((indice/(data.length))*100);
+                    }
+                });
+            } else {
+                this.logGateway.sendLog('Session no cuenta con las columnas requeridas');
+                throw new Error('Session no cuenta con las columnas requeridas');
+            }
+            indice += 1;
+        }
+        this.logGateway.sendLog('Proceso de sesiones completado');
+        this.logGateway.sendProgress(100);
+        const tcsCount = await this.tcsServ.getSize();
+        console.log(`Total registros teachers course sessions: ${tcsCount}`);
+        this.logGateway.sendLog(`Total registros teachers course sessions: ${tcsCount}`);
+        return tcsCount;
     }
 }

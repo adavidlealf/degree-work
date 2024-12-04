@@ -1,5 +1,5 @@
 export class CreateSessionDto {
-    readonly timeslots: number;
-    readonly subject_id: number;
-    readonly roomtype_id: number;
+    timeslots: number;
+    subject_id: number;
+    roomtype_id: number;
 }

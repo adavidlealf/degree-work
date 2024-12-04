@@ -31,6 +31,14 @@ export class CourseService {
         })
     }
 
+    async getByNrc(nrc: number): Promise<CourseEntity> {
+        return await this.courseRepo.findOne({
+            where: {
+                nrc: nrc
+            },
+        })
+    }
+
     async createOne(newDto: CreateCourseDto): Promise<CourseEntity> {
         const entityFound = await this.courseRepo.findOneBy({nrc:newDto.nrc});
         if(entityFound){

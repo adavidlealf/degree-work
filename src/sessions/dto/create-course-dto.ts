@@ -1,5 +1,5 @@
 export class CreateCourseDto {
-    readonly group_name: string;
-    readonly group_size: number;
-    readonly nrc: number;
+    group_name: string;
+    group_size: number;
+    nrc: number;
 }

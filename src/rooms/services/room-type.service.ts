@@ -33,6 +33,14 @@ export class RoomTypeService {
         })
     }
 
+    async getByName(name: string): Promise<RoomTypeEntity> {
+        return await this.roomTypeRepo.findOne({
+            where: {
+                name: name
+            }
+        })
+    }
+
     async createOne(newDto: CreateRoomTypeDto): Promise<RoomTypeEntity> {
         const newEntity = new RoomTypeEntity();
         newEntity.name = newDto.name;

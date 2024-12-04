@@ -31,6 +31,14 @@ export class TeacherService {
         })
     }
 
+    async getByName(name: string): Promise<TeacherEntity> {
+        return await this.teacherRepo.findOne({
+            where: {
+                name: name
+            },
+        })
+    }
+
     async createOne(newDto: CreateTeacherDto): Promise<TeacherEntity> {
         const newEntity = new TeacherEntity();
         newEntity.name = newDto.name;

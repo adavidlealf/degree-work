@@ -14,4 +14,4 @@ export class TeacherEntity {
         (course_sessions: TeacherCourseSessionEntity) => course_sessions.teacher
     )
     course_sessions: TeacherCourseSessionEntity[];
-} 
+}
