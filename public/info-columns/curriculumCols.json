@@ -1,0 +1,22 @@
+[
+    { 
+        "column": "subject_name",
+        "definition": "Nombre de la asignatura sugerida en el periodo especifico del programa académico del plan de estudios. Si no tiene nombre, se le pone el mismo codigo de la materia.",
+        "required": "NO"
+    },
+    { 
+        "column": "subject_code",
+        "definition": "Codigo de la asignatura sugerida en el periodo especifico del programa académico del plan de estudios",
+        "required": "SI"
+    },
+    { 
+        "column": "program_name",
+        "definition": "Nombre del programa académico del plan de estudios.",
+        "required": "SI"
+    },
+    { 
+        "column": "curriculum_term",
+        "definition": "Periodo especifico del programa académico del plan de estudios.",
+        "required": "SI"
+    }
+]

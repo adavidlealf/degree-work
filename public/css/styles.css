@@ -1,0 +1,35 @@
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    line-height: 1.6;
+}
+
+/* Título */
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+/* Tabla */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+}
+
+/* Estilo del encabezado */
+th {
+    background-color: yellow;
+}
+
+/* Filas alternadas */
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
