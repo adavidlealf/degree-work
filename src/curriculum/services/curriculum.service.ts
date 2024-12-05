@@ -16,7 +16,7 @@ export class CurriculumService {
         private readonly subjectRepo: Repository<SubjectEntity>,
         @InjectRepository(ProgramEntity)
         private readonly programRepo: Repository<ProgramEntity>,
-    ){}
+    ) { }
 
     async getAll(): Promise<CurriculumEntity[]> {
         return await this.curriculumRepo.find({
@@ -39,26 +39,45 @@ export class CurriculumService {
         })
     }
 
-    async getBySubjectProgram(subject_id: number, program_id: number): Promise<CurriculumEntity> {
-        return await this.curriculumRepo.findOne({
-            where: {
-                subject: {id: subject_id},
-                program: {id: program_id},
-            }
-        })
+    async getBySubjectProgram(subject_id: number, program_id: number): Promise<CurriculumEntity | null> {
+        return await this.curriculumRepo
+            .createQueryBuilder('curriculum')
+            .where('curriculum.subject = :subject_id', { subject_id })
+            .andWhere('curriculum.program = :program_id', { program_id })
+            .getOne();
+    }
+
+    async getSubjectIdsByProgramTerm(term: number, program_id: number): Promise<number[]> {
+        const result = await this.curriculumRepo
+            .createQueryBuilder('curriculum')
+            .select('DISTINCT curriculum.subject', 'subject_id')
+            .where('curriculum.term = :term', { term })
+            .andWhere('curriculum.program = :program_id', { program_id })
+            .getRawMany();
+        return result.map(row => row.subject_id);
+    }
+
+    async getDistinctTermsByProgram(program_id: number): Promise<number[]> {
+        const result = await this.curriculumRepo
+            .createQueryBuilder('curr')
+            .select('DISTINCT curr.term', 'term')
+            .where('curr.program = :program_id', { program_id })
+            .orderBy('curr.term', 'ASC')
+            .getRawMany();
+        return result.map((row) => row.term);
     }
 
     async createOne(newDto: CreateCurriculumDto): Promise<CurriculumEntity> {
         const subjectFound = await this.subjectRepo.findOne({
-            where: {id: newDto.subject_id}
+            where: { id: newDto.subject_id }
         })
-        if(!subjectFound){
+        if (!subjectFound) {
             throw new Error('Subject not found in creation of curriculum');
         }
         const programFound = await this.programRepo.findOne({
-            where: {id: newDto.program_id}
+            where: { id: newDto.program_id }
         })
-        if(!subjectFound){
+        if (!subjectFound) {
             throw new Error('Program not found in creation of curriculum');
         }
 
@@ -71,18 +90,18 @@ export class CurriculumService {
 
     async updateOne(id: number, updatedDto: CreateCurriculumDto): Promise<CurriculumEntity> {
         const subjectFound = await this.subjectRepo.findOne({
-            where: {id: updatedDto.subject_id}
+            where: { id: updatedDto.subject_id }
         })
-        if(!subjectFound){
+        if (!subjectFound) {
             throw new Error('Subject not found in update of curriculum');
         }
         const programFound = await this.programRepo.findOne({
-            where: {id: updatedDto.program_id}
+            where: { id: updatedDto.program_id }
         })
-        if(!subjectFound){
+        if (!subjectFound) {
             throw new Error('Program not found in update of curriculum');
         }
-        const entityFound = await this.curriculumRepo.findOneBy({id:id});
+        const entityFound = await this.curriculumRepo.findOneBy({ id: id });
         entityFound.term = updatedDto.term;
         entityFound.subject = subjectFound;
         entityFound.program = programFound;
@@ -91,20 +110,20 @@ export class CurriculumService {
 
     async createMany(newDtos: CreateCurriculumDto[]): Promise<CurriculumEntity[]> {
         const newEntities: CurriculumEntity[] = [];
-        for(const newDto of newDtos){
+        for (const newDto of newDtos) {
             const subjectFound = await this.subjectRepo.findOne({
-                where: {id: newDto.subject_id}
+                where: { id: newDto.subject_id }
             })
-            if(!subjectFound){
+            if (!subjectFound) {
                 throw new Error('Subject not found in bulk creation of curriculum');
             }
             const programFound = await this.programRepo.findOne({
-                where: {id: newDto.program_id}
+                where: { id: newDto.program_id }
             })
-            if(!subjectFound){
+            if (!subjectFound) {
                 throw new Error('Program not found in bulk creation of curriculum');
             }
-    
+
             const newEntity = new CurriculumEntity();
             newEntity.term = newDto.term;
             newEntity.subject = subjectFound;

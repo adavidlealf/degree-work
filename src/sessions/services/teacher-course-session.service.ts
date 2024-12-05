@@ -1,15 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { TeacherCourseSessionEntity } from '../entities/teacher-course-session.entity';
-import { Repository } from 'typeorm';
-import { CreateTeacherCourseSessionDto } from '../dto/create-teacher-course-session-dto';
-import { TeacherEntity } from '../entities/teacher.entity';
-import { CourseEntity } from '../entities/course.entity';
-import { SessionEntity } from '../entities/session.entity';
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { TeacherCourseSessionEntity } from "../entities/teacher-course-session.entity";
+import { Repository } from "typeorm";
+import { CreateTeacherCourseSessionDto } from "../dto/create-teacher-course-session-dto";
+import { TeacherEntity } from "../entities/teacher.entity";
+import { CourseEntity } from "../entities/course.entity";
+import { SessionEntity } from "../entities/session.entity";
 
 @Injectable()
 export class TeacherCourseSessionService {
-
     constructor(
         @InjectRepository(TeacherCourseSessionEntity)
         private readonly teacherCourseSessionRepo: Repository<TeacherCourseSessionEntity>,
@@ -18,8 +17,8 @@ export class TeacherCourseSessionService {
         @InjectRepository(CourseEntity)
         private readonly courseRepo: Repository<CourseEntity>,
         @InjectRepository(SessionEntity)
-        private readonly sessionRepo: Repository<SessionEntity>,
-    ){}
+        private readonly sessionRepo: Repository<SessionEntity>
+    ) { }
 
     async getAll(): Promise<TeacherCourseSessionEntity[]> {
         return await this.teacherCourseSessionRepo.find({
@@ -27,41 +26,85 @@ export class TeacherCourseSessionService {
                 teacher: true,
                 course: true,
                 session: true,
-            }
+            },
         });
     }
+
+    async getAllIds(): Promise<number[]> {
+        const records = await this.teacherCourseSessionRepo.find({
+            select: ["id"], // Solo selecciona el campo `id`
+        });
+        return records.map((record) => record.id);
+    }
+
+    async getIdsByTeacher(teacher_id: number): Promise<number[]> {
+        const result = await this.teacherCourseSessionRepo
+            .createQueryBuilder("tcs") // Alias definido aquí
+            .select("tcs.id", "id")
+            .innerJoin("tcs.teacher", "teacher") // Relación con teacher
+            .where("teacher.id = :teacher_id", { teacher_id }) // Filtro por teacher_id
+            .getRawMany(); // Obtener resultados
+        return result.map(row => row.id);
+    }
+
+    async getIdsByCourse(course_id: number): Promise<number[]> {
+        const result = await this.teacherCourseSessionRepo
+            .createQueryBuilder("tcs") // Alias definido aquí
+            .select("tcs.id", "id")
+            .innerJoin("tcs.course", "course") // Relación con course
+            .where("course.id = :course_id", { course_id }) // Filtro por course_id
+            .getRawMany(); // Obtener resultados
+        return result.map(row => row.id);
+    }
+
+    async getIdsBySubject(subject_id: number): Promise<number[]> {
+        const result = await this.teacherCourseSessionRepo
+            .createQueryBuilder("tcs") // Alias para la tabla principal
+            .select("tcs.id", "id") // Seleccionar únicamente el campo id
+            .innerJoin("tcs.session", "session") // Relación con la tabla session
+            .innerJoin("session.subject", "subject") // Relación con la tabla subject
+            .where("subject.id = :subject_id", { subject_id }) // Filtro por subject_id
+            .getRawMany(); // Recuperar datos como objetos planos
+
+        return result.map(row => row.id); // Extraer los valores id
+    }
+
 
     async getById(id: number): Promise<TeacherCourseSessionEntity> {
         return await this.teacherCourseSessionRepo.findOne({
             where: {
-                id: id
+                id: id,
             },
             relations: {
                 teacher: true,
                 course: true,
                 session: true,
-            }
-        })
+            },
+        });
     }
 
     async createOne(newDto: CreateTeacherCourseSessionDto): Promise<TeacherCourseSessionEntity> {
         const teacherFound = await this.teacherRepo.findOne({
-            where: {id: newDto.teacher_id}
-        })
-        if(!teacherFound){
-            throw new Error('Teacher not found in creation of teacher course session');
+            where: { id: newDto.teacher_id },
+        });
+        if (!teacherFound) {
+            throw new Error(
+                "Teacher not found in creation of teacher course session"
+            );
         }
         const courseFound = await this.courseRepo.findOne({
-            where: {id: newDto.course_id}
-        })
-        if(!courseFound){
-            throw new Error('Course not found in creation of teacher course session');
+            where: { id: newDto.course_id },
+        });
+        if (!courseFound) {
+            throw new Error("Course not found in creation of teacher course session");
         }
         const sessionFound = await this.sessionRepo.findOne({
-            where: {id: newDto.session_id}
-        })
-        if(!sessionFound){
-            throw new Error('Session not found in creation of teacher course session');
+            where: { id: newDto.session_id },
+        });
+        if (!sessionFound) {
+            throw new Error(
+                "Session not found in creation of teacher course session"
+            );
         }
         const newEntity = new TeacherCourseSessionEntity();
         newEntity.teacher = teacherFound;
@@ -72,24 +115,26 @@ export class TeacherCourseSessionService {
 
     async updateOne(id: number, updatedDto: CreateTeacherCourseSessionDto): Promise<TeacherCourseSessionEntity> {
         const teacherFound = await this.teacherRepo.findOne({
-            where: {id: updatedDto.teacher_id}
-        })
-        if(!teacherFound){
-            throw new Error('Teacher not found in update of teacher course session');
+            where: { id: updatedDto.teacher_id },
+        });
+        if (!teacherFound) {
+            throw new Error("Teacher not found in update of teacher course session");
         }
         const courseFound = await this.courseRepo.findOne({
-            where: {id: updatedDto.course_id}
-        })
-        if(!courseFound){
-            throw new Error('Course not found in update of teacher course session');
+            where: { id: updatedDto.course_id },
+        });
+        if (!courseFound) {
+            throw new Error("Course not found in update of teacher course session");
         }
         const sessionFound = await this.sessionRepo.findOne({
-            where: {id: updatedDto.session_id}
-        })
-        if(!sessionFound){
-            throw new Error('Session not found in update of teacher course session');
+            where: { id: updatedDto.session_id },
+        });
+        if (!sessionFound) {
+            throw new Error("Session not found in update of teacher course session");
         }
-        const entityFound = await this.teacherCourseSessionRepo.findOneBy({id:id});
+        const entityFound = await this.teacherCourseSessionRepo.findOneBy({
+            id: id,
+        });
         entityFound.teacher = teacherFound;
         entityFound.course = courseFound;
         entityFound.session = sessionFound;
@@ -98,24 +143,30 @@ export class TeacherCourseSessionService {
 
     async createMany(newDtos: CreateTeacherCourseSessionDto[]): Promise<TeacherCourseSessionEntity[]> {
         const newEntities: TeacherCourseSessionEntity[] = [];
-        for(const newDto of newDtos){
+        for (const newDto of newDtos) {
             const teacherFound = await this.teacherRepo.findOne({
-                where: {id: newDto.teacher_id}
-            })
-            if(!teacherFound){
-                throw new Error('Teacher not found in bulk creation of teacher course session');
+                where: { id: newDto.teacher_id },
+            });
+            if (!teacherFound) {
+                throw new Error(
+                    "Teacher not found in bulk creation of teacher course session"
+                );
             }
             const courseFound = await this.courseRepo.findOne({
-                where: {id: newDto.course_id}
-            })
-            if(!courseFound){
-                throw new Error('Course not found in bulk creation of teacher course session');
+                where: { id: newDto.course_id },
+            });
+            if (!courseFound) {
+                throw new Error(
+                    "Course not found in bulk creation of teacher course session"
+                );
             }
             const sessionFound = await this.sessionRepo.findOne({
-                where: {id: newDto.session_id}
-            })
-            if(!sessionFound){
-                throw new Error('Session not found in bulk creation of teacher course session');
+                where: { id: newDto.session_id },
+            });
+            if (!sessionFound) {
+                throw new Error(
+                    "Session not found in bulk creation of teacher course session"
+                );
             }
             const newEntity = new TeacherCourseSessionEntity();
             newEntity.teacher = teacherFound;

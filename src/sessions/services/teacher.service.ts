@@ -10,7 +10,7 @@ export class TeacherService {
     constructor(
         @InjectRepository(TeacherEntity)
         private readonly teacherRepo: Repository<TeacherEntity>,
-    ){}
+    ) { }
 
     async getAll(): Promise<TeacherEntity[]> {
         return await this.teacherRepo.find({
@@ -18,6 +18,13 @@ export class TeacherService {
                 course_sessions: true,
             }
         });
+    }
+
+    async getAllIds(): Promise<number[]> {
+        const records = await this.teacherRepo.find({
+            select: ['id'], // Solo selecciona el campo `id`
+        });
+        return records.map(record => record.id);
     }
 
     async getById(id: number): Promise<TeacherEntity> {
@@ -46,14 +53,14 @@ export class TeacherService {
     }
 
     async updateOne(id: number, updatedDto: CreateTeacherDto): Promise<TeacherEntity> {
-        const entityFound = await this.teacherRepo.findOneBy({id:id});
+        const entityFound = await this.teacherRepo.findOneBy({ id: id });
         entityFound.name = updatedDto.name;
         return await this.teacherRepo.save(entityFound);
     }
 
     async createMany(newDtos: CreateTeacherDto[]): Promise<TeacherEntity[]> {
         const newEntities: TeacherEntity[] = [];
-        for(const newDto of newDtos){
+        for (const newDto of newDtos) {
             const newEntity = new TeacherEntity();
             newEntity.name = newDto.name;
             newEntities.push(newEntity);

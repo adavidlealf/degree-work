@@ -10,7 +10,7 @@ export class ProgramService {
     constructor(
         @InjectRepository(ProgramEntity)
         private readonly programRepo: Repository<ProgramEntity>,
-    ){}
+    ) { }
 
     async getAll(): Promise<ProgramEntity[]> {
         return await this.programRepo.find({
@@ -18,6 +18,13 @@ export class ProgramService {
                 curriculums: true,
             }
         });
+    }
+
+    async getAllIds(): Promise<number[]> {
+        const records = await this.programRepo.find({
+            select: ['id'], // Solo selecciona el campo `id`
+        });
+        return records.map(record => record.id);
     }
 
     async getById(id: number): Promise<ProgramEntity> {
@@ -46,14 +53,14 @@ export class ProgramService {
     }
 
     async updateOne(id: number, updatedDto: CreateProgramDto): Promise<ProgramEntity> {
-        const entityFound = await this.programRepo.findOneBy({id:id});
+        const entityFound = await this.programRepo.findOneBy({ id: id });
         entityFound.name = updatedDto.name;
         return await this.programRepo.save(entityFound);
     }
 
     async createMany(newDtos: CreateProgramDto[]): Promise<ProgramEntity[]> {
         const newEntities: ProgramEntity[] = [];
-        for(const newDto of newDtos){
+        for (const newDto of newDtos) {
             const newEntity = new ProgramEntity();
             newEntity.name = newDto.name;
             newEntities.push(newEntity);

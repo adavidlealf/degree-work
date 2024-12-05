@@ -10,7 +10,7 @@ export class RoomTypeService {
     constructor(
         @InjectRepository(RoomTypeEntity)
         private readonly roomTypeRepo: Repository<RoomTypeEntity>,
-    ){}
+    ) { }
 
     async getAll(): Promise<RoomTypeEntity[]> {
         return await this.roomTypeRepo.find({
@@ -49,7 +49,7 @@ export class RoomTypeService {
     }
 
     async updateOne(id: number, updatedDto: CreateRoomTypeDto): Promise<RoomTypeEntity> {
-        const entityFound = await this.roomTypeRepo.findOneBy({id:id});
+        const entityFound = await this.roomTypeRepo.findOneBy({ id: id });
         entityFound.name = updatedDto.name;
         entityFound.max_occup_perc = entityFound.max_occup_perc;
         return await this.roomTypeRepo.save(entityFound);
@@ -57,7 +57,7 @@ export class RoomTypeService {
 
     async createMany(newDtos: CreateRoomTypeDto[]): Promise<RoomTypeEntity[]> {
         const newEntities: RoomTypeEntity[] = [];
-        for(const newDto of newDtos){
+        for (const newDto of newDtos) {
             const newEntity = new RoomTypeEntity();
             newEntity.name = newDto.name;
             newEntity.max_occup_perc = newDto.max_occup_perc;
@@ -72,5 +72,9 @@ export class RoomTypeService {
 
     async deleteOne(id: number): Promise<any> {
         return await this.roomTypeRepo.delete(id);
+    }
+
+    async getSize(): Promise<number> {
+        return await this.roomTypeRepo.count();
     }
 }

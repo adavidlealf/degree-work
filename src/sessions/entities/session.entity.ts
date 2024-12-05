@@ -3,7 +3,7 @@ import { RoomTypeEntity } from "src/rooms/entities/room-type.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { TeacherCourseSessionEntity } from "./teacher-course-session.entity";
 
-@Entity({name: 'session'})
+@Entity({ name: 'session' })
 export class SessionEntity {
     @PrimaryGeneratedColumn()
     id: number;
@@ -14,19 +14,19 @@ export class SessionEntity {
     @ManyToOne(
         () => SubjectEntity,
         (subject: SubjectEntity) => subject.sessions,
-    {
-        onDelete: 'RESTRICT'
-    })
-    @JoinColumn({name: 'subject_id'})
+        {
+            onDelete: 'RESTRICT'
+        })
+    @JoinColumn({ name: 'subject_id' })
     subject: SubjectEntity;
-    
+
     @ManyToOne(
         () => RoomTypeEntity,
         (room_type: RoomTypeEntity) => room_type.sessions,
-    {
-        onDelete: 'RESTRICT'
-    })
-    @JoinColumn({name: 'roomtype_id'})
+        {
+            onDelete: 'RESTRICT'
+        })
+    @JoinColumn({ name: 'roomtype_id' })
     room_type: RoomTypeEntity;
 
     @OneToMany(
@@ -34,4 +34,4 @@ export class SessionEntity {
         (teacher_courses: TeacherCourseSessionEntity) => teacher_courses.session
     )
     teacher_courses: TeacherCourseSessionEntity[];
-} 
+}
