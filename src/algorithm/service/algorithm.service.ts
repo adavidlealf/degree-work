@@ -17,16 +17,12 @@ export class AlgorithmService {
 
     constructor(
         private readonly currServ: CurriculumService,
-        private readonly subjectServ: SubjectService,
         private readonly programServ: ProgramService,
         private readonly roomServ: RoomService,
         private readonly roomTypeServ: RoomTypeService,
         private readonly teacherServ: TeacherService,
-        private readonly courseServ: CourseService,
-        private readonly sessionServ: SessionService,
         private readonly tcsServ: TeacherCourseSessionService,
         private readonly campusServ: CampusService,
-        private readonly buildingServ: BuildingService,
         private readonly logGateway: LogGateway,
     ) { }
 
@@ -410,6 +406,7 @@ export class AlgorithmService {
     async main() {
         await this.crearEstructuras();
         await this.colorearGrafo();
+        this.asignarSalones();
     }
 
     /**
