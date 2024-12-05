@@ -21,6 +21,31 @@ export class RoomTypeService {
         });
     }
 
+    async getAllIds(): Promise<number[]> {
+        const records = await this.roomTypeRepo.find({
+            select: ["id"], // Solo selecciona el campo `id`
+        });
+        return records.map((record) => record.id);
+    }
+
+    async getAllMaxOccupPerc(): Promise<number[]> {
+        const records = await this.roomTypeRepo.find({
+            select: ["max_occup_perc"], // Solo selecciona el campo `max_occup_perc`
+        });
+        return records.map((record) => record.max_occup_perc);
+    }
+
+    async getMaxOccupPercById(id: number): Promise<number | null> {
+        const result = await this.roomTypeRepo
+            .createQueryBuilder("room_type")
+            .select("room_type.max_occup_perc")
+            .where("room_type.id = :id", { id })
+            .getRawOne();
+    
+        return result ? result.max_occup_perc : null; // Si se encuentra el resultado, devuelve el valor; si no, retorna null
+    }
+    
+
     async getById(id: number): Promise<RoomTypeEntity> {
         return await this.roomTypeRepo.findOne({
             where: {

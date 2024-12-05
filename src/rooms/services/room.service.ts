@@ -29,6 +29,13 @@ export class RoomService {
         });
     }
 
+    async getAllIds(): Promise<number[]> {
+        const records = await this.roomRepo.find({
+            select: ["id"], // Solo selecciona el campo `id`
+        });
+        return records.map((record) => record.id);
+    }
+
     async getById(id: number): Promise<RoomEntity> {
         return await this.roomRepo.findOne({
             where: {
@@ -39,6 +46,38 @@ export class RoomService {
                 room_type: true,
             }
         })
+    }
+
+    async getCapacityById(id: number): Promise<number> {
+        const result = await this.roomRepo
+            .createQueryBuilder("room")
+            .select("room.capacity")
+            .where("room.id = :id", { id })
+            .getRawOne();
+        return result ? result.capacity : null;
+    }
+
+    async getIdsByCampusType(campus_id: number, type_id: number): Promise<number[]> {
+        const result = await this.roomRepo
+            .createQueryBuilder("room")
+            .select("room.id")
+            .innerJoin("room.building", "building")  // Realizamos JOIN con la tabla BuildingEntity
+            .innerJoin("room.room_type", "room_type")  // Realizamos JOIN con la tabla RoomTypeEntity
+            .where("building.campus = :campus_id", { campus_id })  // Filtramos por campus_id de la tabla BuildingEntity
+            .andWhere("room.room_type = :type_id", { type_id })
+            .getRawMany();
+    
+        return result.map(row => row.id);  // Extraemos solo los ids
+    }
+    
+    async getIdsByType(type_id: number): Promise<number[]> {
+        const result = await this.roomRepo
+            .createQueryBuilder("room")
+            .select("room.id")
+            .where("room.room_type = :type_id", { type_id })
+            .getRawMany();
+    
+        return result.map(row => row.id);  // Extraemos solo los ids
     }
 
     async createOne(newDto: CreateRoomDto): Promise<RoomEntity> {

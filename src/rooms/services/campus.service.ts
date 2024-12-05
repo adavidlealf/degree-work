@@ -20,6 +20,13 @@ export class CampusService {
         });
     }
 
+    async getAllIds(): Promise<number[]> {
+        const records = await this.campusRepo.find({
+            select: ["id"], // Solo selecciona el campo `id`
+        });
+        return records.map((record) => record.id);
+    }
+
     async getById(id: number): Promise<CampusEntity> {
         return await this.campusRepo.findOne({
             where: {
