@@ -291,6 +291,27 @@ export class AlgorithmService {
     }
 
     /**
+     * Inicializa las clases de colores, con arreglos vacios por cada color
+     */
+    initColorClases() {
+        this.c_vertices = Array.from({length: this.nc}, () => []);
+    }
+
+    /**
+     * Inicializa los colores de los vertices, con arreglos de 2 ceros por cada vertice
+     */
+    initVerticeColors() {
+        this.v_colors = Array.from({length: this.n}, () => [0,0]);
+    }
+
+    /**
+     * Inicializa los campus obligatorios de cada vertice con 0.
+     */
+    initCampusVertice() {
+        this.v_campus = Array.from({length: this.n}, () => 0);
+    }
+
+    /**
      * Dado un arreglo de ids de vertices en conflicto, se generan las aristas entre todos.
      * @param verticesParam number[] arreglo de ids de vertices
      */
@@ -347,8 +368,21 @@ export class AlgorithmService {
         // }
     }
 
+    /**
+     * En base a la informacion de la base de datos, genera las estructuras requeridas para el algoritmo
+     */
+    async crearEstructuras(){
+        await this.generateG();
+        await this.generateRoomStructures();
+        this.initColorClases();
+        this.initVerticeColors();
+        this.initCampusVertice();
+    }
+
+    /**
+     * Algoritmo
+     */
     async main() {
-        this.generateG();
-        this.generateRoomStructures();
+        await this.crearEstructuras();
     }
 }
