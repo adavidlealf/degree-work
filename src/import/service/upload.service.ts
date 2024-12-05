@@ -6,7 +6,7 @@ import { CreateSubjectDto } from 'src/curriculum/dto/create-subject-dto';
 import { CreateProgramDto } from 'src/curriculum/dto/create-program-dto';
 import { CreateCurriculumDto } from 'src/curriculum/dto/create-curriculum-dto';
 import { CurriculumService } from 'src/curriculum/services/curriculum.service';
-import { LogGateway } from '../gateway/log.gateway';
+import { LogGateway } from '../../gateway/log.gateway';
 import { ImportSessionDto } from '../dto/import-session-dto';
 import { RoomTypeService } from 'src/rooms/services/room-type.service';
 import { CreateRoomTypeDto } from 'src/rooms/dto/create-room-type-dto';

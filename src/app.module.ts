@@ -4,6 +4,8 @@ import { RoomsModule } from './rooms/rooms.module';
 import { CurriculumModule } from './curriculum/curriculum.module';
 import { SessionsModule } from './sessions/sessions.module';
 import { ImportModule } from './import/import.module';
+import { AlgorithmModule } from './algorithm/algorithm.module';
+import { LogGateway } from './gateway/log.gateway';
 
 @Module({
   imports: [
@@ -20,7 +22,11 @@ import { ImportModule } from './import/import.module';
     RoomsModule, 
     CurriculumModule, 
     SessionsModule, 
-    ImportModule,
+    ImportModule, 
+    AlgorithmModule,
   ],
+  providers: [
+    LogGateway,
+  ]
 })
 export class AppModule {}

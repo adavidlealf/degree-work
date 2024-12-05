@@ -8,7 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SubjectEntity } from 'src/curriculum/entities/subject.entity';
 import { ProgramEntity } from 'src/curriculum/entities/program.entity';
 import { CurriculumEntity } from 'src/curriculum/entities/curriculum.entity';
-import { LogGateway } from './gateway/log.gateway';
+import { LogGateway } from '../gateway/log.gateway';
 import { RoomTypeService } from 'src/rooms/services/room-type.service';
 import { TeacherService } from 'src/sessions/services/teacher.service';
 import { CourseService } from 'src/sessions/services/course.service';
