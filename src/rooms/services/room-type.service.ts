@@ -66,6 +66,19 @@ export class RoomTypeService {
         })
     }
 
+    async getCampusIdsByRoomType(roomTypeId: number): Promise<number[]> {
+        const campusIds = await this.roomTypeRepo
+            .createQueryBuilder('roomType')
+            .leftJoin('roomType.rooms', 'room') // Relación RoomType -> Room
+            .leftJoin('room.building', 'building') // Relación Room -> Building
+            .leftJoin('building.campus', 'campus') // Relación Building -> Campus
+            .select('DISTINCT campus.id', 'campusId') // Seleccionar IDs únicos
+            .where('roomType.id = :roomTypeId', { roomTypeId }) // Filtrar por RoomType
+            .getRawMany(); // Obtener los resultados como objetos raw
+
+        return campusIds.map((row) => row.campusId); // Extraer solo los IDs
+    }
+
     async createOne(newDto: CreateRoomTypeDto): Promise<RoomTypeEntity> {
         const newEntity = new RoomTypeEntity();
         newEntity.name = newDto.name;
